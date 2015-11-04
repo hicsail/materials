@@ -1,0 +1,116 @@
+-- Created by Vertabelo (http://vertabelo.com)
+-- Last modification date: 2015-11-04 20:40:43.278
+
+
+
+
+-- tables
+-- Table: listing
+CREATE TABLE listing (
+    id int  NOT NULL,
+    url text  NULL,
+    material_id int  NOT NULL,
+    CONSTRAINT listing_pk PRIMARY KEY (id)
+);
+
+
+
+-- Table: material
+CREATE TABLE material (
+    id int  NOT NULL,
+    smiles text  NOT NULL,
+    compound_name text  NOT NULL,
+    CONSTRAINT material_pk PRIMARY KEY (id)
+);
+
+
+
+-- Table: measurement
+CREATE TABLE measurement (
+    id int  NOT NULL,
+    value int  NOT NULL,
+    unit_id int  NOT NULL,
+    listing_id int  NOT NULL,
+    CONSTRAINT measurement_pk PRIMARY KEY (id)
+);
+
+
+
+-- Table: reference
+CREATE TABLE reference (
+    id int  NOT NULL,
+    name text  NOT NULL,
+    listing_id int  NOT NULL,
+    CONSTRAINT reference_pk PRIMARY KEY (id)
+);
+
+
+
+-- Table: unit
+CREATE TABLE unit (
+    id int  NOT NULL,
+    name text  NOT NULL,
+    CONSTRAINT unit_pk PRIMARY KEY (id)
+);
+
+
+
+
+
+
+
+-- foreign keys
+-- Reference:  listing_material (table: listing)
+
+
+ALTER TABLE listing ADD CONSTRAINT listing_material 
+    FOREIGN KEY (material_id)
+    REFERENCES material (id)
+    ON DELETE  CASCADE 
+    ON UPDATE  CASCADE 
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
+;
+
+-- Reference:  measurement_listing (table: measurement)
+
+
+ALTER TABLE measurement ADD CONSTRAINT measurement_listing 
+    FOREIGN KEY (listing_id)
+    REFERENCES listing (id)
+    ON DELETE  CASCADE 
+    ON UPDATE  CASCADE 
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
+;
+
+-- Reference:  measurement_unit (table: measurement)
+
+
+ALTER TABLE measurement ADD CONSTRAINT measurement_unit 
+    FOREIGN KEY (unit_id)
+    REFERENCES unit (id)
+    ON DELETE  CASCADE 
+    ON UPDATE  CASCADE 
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
+;
+
+-- Reference:  reference_listing (table: reference)
+
+
+ALTER TABLE reference ADD CONSTRAINT reference_listing 
+    FOREIGN KEY (listing_id)
+    REFERENCES listing (id)
+    ON DELETE  CASCADE 
+    ON UPDATE  CASCADE 
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
+;
+
+
+
+
+
+
+-- End of file.
