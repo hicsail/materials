@@ -1,56 +1,56 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2015-11-04 20:40:43.278
+-- Last modification date: 2015-11-09 19:58:19.204
 
 
 
 
 -- tables
--- Table: listing
-CREATE TABLE listing (
+-- Table: listings
+CREATE TABLE listings (
     id int  NOT NULL,
     url text  NULL,
     material_id int  NOT NULL,
-    CONSTRAINT listing_pk PRIMARY KEY (id)
+    CONSTRAINT listings_pk PRIMARY KEY (id)
 );
 
 
 
--- Table: material
-CREATE TABLE material (
+-- Table: materials
+CREATE TABLE materials (
     id int  NOT NULL,
     smiles text  NOT NULL,
     compound_name text  NOT NULL,
-    CONSTRAINT material_pk PRIMARY KEY (id)
+    CONSTRAINT materials_pk PRIMARY KEY (id)
 );
 
 
 
--- Table: measurement
-CREATE TABLE measurement (
+-- Table: measurements
+CREATE TABLE measurements (
     id int  NOT NULL,
     value int  NOT NULL,
     unit_id int  NOT NULL,
     listing_id int  NOT NULL,
-    CONSTRAINT measurement_pk PRIMARY KEY (id)
+    CONSTRAINT measurements_pk PRIMARY KEY (id)
 );
 
 
 
--- Table: reference
-CREATE TABLE reference (
+-- Table: "references"
+CREATE TABLE "references" (
     id int  NOT NULL,
     name text  NOT NULL,
     listing_id int  NOT NULL,
-    CONSTRAINT reference_pk PRIMARY KEY (id)
+    CONSTRAINT references_pk PRIMARY KEY (id)
 );
 
 
 
--- Table: unit
-CREATE TABLE unit (
+-- Table: units
+CREATE TABLE units (
     id int  NOT NULL,
     name text  NOT NULL,
-    CONSTRAINT unit_pk PRIMARY KEY (id)
+    CONSTRAINT units_pk PRIMARY KEY (id)
 );
 
 
@@ -60,48 +60,48 @@ CREATE TABLE unit (
 
 
 -- foreign keys
--- Reference:  listing_material (table: listing)
+-- Reference:  listing_material (table: listings)
 
 
-ALTER TABLE listing ADD CONSTRAINT listing_material 
+ALTER TABLE listings ADD CONSTRAINT listing_material 
     FOREIGN KEY (material_id)
-    REFERENCES material (id)
+    REFERENCES materials (id)
     ON DELETE  CASCADE 
     ON UPDATE  CASCADE 
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE 
 ;
 
--- Reference:  measurement_listing (table: measurement)
+-- Reference:  measurement_listing (table: measurements)
 
 
-ALTER TABLE measurement ADD CONSTRAINT measurement_listing 
+ALTER TABLE measurements ADD CONSTRAINT measurement_listing 
     FOREIGN KEY (listing_id)
-    REFERENCES listing (id)
+    REFERENCES listings (id)
     ON DELETE  CASCADE 
     ON UPDATE  CASCADE 
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE 
 ;
 
--- Reference:  measurement_unit (table: measurement)
+-- Reference:  measurement_unit (table: measurements)
 
 
-ALTER TABLE measurement ADD CONSTRAINT measurement_unit 
+ALTER TABLE measurements ADD CONSTRAINT measurement_unit 
     FOREIGN KEY (unit_id)
-    REFERENCES unit (id)
+    REFERENCES units (id)
     ON DELETE  CASCADE 
     ON UPDATE  CASCADE 
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE 
 ;
 
--- Reference:  reference_listing (table: reference)
+-- Reference:  reference_listing (table: "references")
 
 
-ALTER TABLE reference ADD CONSTRAINT reference_listing 
+ALTER TABLE "references" ADD CONSTRAINT reference_listing 
     FOREIGN KEY (listing_id)
-    REFERENCES listing (id)
+    REFERENCES listings (id)
     ON DELETE  CASCADE 
     ON UPDATE  CASCADE 
     NOT DEFERRABLE 
