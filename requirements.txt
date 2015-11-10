@@ -6,6 +6,7 @@ enum34==1.0.4
 idna==2.0
 ipaddress==1.0.14
 lxml==3.4.4
+psycopg2==2.6.1
 pyasn1==0.1.9
 pyasn1-modules==0.0.8
 pycparser==2.14
