@@ -8,7 +8,7 @@ class Reference(Base):
     __tablename__ = 'references'
 
     id = Column(Integer, primary_key=True)
-    listing_id = Column(Integer, ForeignKey('listings.id'))
+    listing_id = Column(Integer, ForeignKey('listings.id', ondelete='CASCADE', onupdate='CASCADE'))
     name = Column(Text, nullable=False)
 
     def __repr__(self):
