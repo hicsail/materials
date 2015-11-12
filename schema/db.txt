@@ -1,5 +1,5 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2015-11-09 19:58:19.204
+-- Last modification date: 2015-11-12 18:49:46.637
 
 
 
@@ -8,8 +8,8 @@
 -- Table: listings
 CREATE TABLE listings (
     id int  NOT NULL,
-    url text  NULL,
     material_id int  NOT NULL,
+    url text  NULL,
     CONSTRAINT listings_pk PRIMARY KEY (id)
 );
 
@@ -28,10 +28,21 @@ CREATE TABLE materials (
 -- Table: measurements
 CREATE TABLE measurements (
     id int  NOT NULL,
-    value int  NOT NULL,
-    unit_id int  NOT NULL,
+    property_id int  NOT NULL,
     listing_id int  NOT NULL,
+    value int  NOT NULL,
+    error int  NULL,
+    unit text  NOT NULL,
     CONSTRAINT measurements_pk PRIMARY KEY (id)
+);
+
+
+
+-- Table: properties
+CREATE TABLE properties (
+    id int  NOT NULL,
+    name text  NOT NULL,
+    CONSTRAINT properties_pk PRIMARY KEY (id)
 );
 
 
@@ -39,18 +50,9 @@ CREATE TABLE measurements (
 -- Table: "references"
 CREATE TABLE "references" (
     id int  NOT NULL,
-    name text  NOT NULL,
     listing_id int  NOT NULL,
-    CONSTRAINT references_pk PRIMARY KEY (id)
-);
-
-
-
--- Table: units
-CREATE TABLE units (
-    id int  NOT NULL,
     name text  NOT NULL,
-    CONSTRAINT units_pk PRIMARY KEY (id)
+    CONSTRAINT references_pk PRIMARY KEY (id)
 );
 
 
@@ -84,12 +86,12 @@ ALTER TABLE measurements ADD CONSTRAINT measurement_listing
     INITIALLY IMMEDIATE 
 ;
 
--- Reference:  measurement_unit (table: measurements)
+-- Reference:  measurement_property (table: measurements)
 
 
-ALTER TABLE measurements ADD CONSTRAINT measurement_unit 
-    FOREIGN KEY (unit_id)
-    REFERENCES units (id)
+ALTER TABLE measurements ADD CONSTRAINT measurement_property 
+    FOREIGN KEY (property_id)
+    REFERENCES properties (id)
     ON DELETE  CASCADE 
     ON UPDATE  CASCADE 
     NOT DEFERRABLE 
