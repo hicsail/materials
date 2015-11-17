@@ -53,11 +53,18 @@ class Listing(Base):
 
 
 class Measurement(Base):
+    """
+    A listing is defined by a single reference. All listings have a collection of measurement groups, and each group
+    contains multiple individual measurements. For example, a group could be consist of individual temperature,
+    pressure and viscosity measurements. They all share the same measurement_group_id. A collection of groups shares
+    the same listing_id.
+    """
     __tablename__ = 'measurements'
 
     id = Column(Integer, primary_key=True)
     listing_id = Column(Integer, ForeignKey('listings.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     property_id = Column(Integer, ForeignKey('properties.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    measurement_group_id = Column(Integer, nullable=False)
     value = Column(Float, nullable=False)
     error = Column(Integer, nullable=True)
     unit = Column(Text, nullable=True)
