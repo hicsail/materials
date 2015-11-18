@@ -18,7 +18,7 @@ class Component(Base):
     energy = Column(Float, nullable=True)
     smiles = Column(Text, nullable=True)
 
-    mixtures = relationship('Mixture', secondary=mixture_components, backref='components', cascade='all, delete-orphan',
+    mixtures = relationship('Mixture', secondary=mixture_components, backref='components', cascade='all, delete',
                             passive_deletes=True)
 
     def __repr__(self):
@@ -77,12 +77,13 @@ class Reference(Base):
     __tablename__ = 'references'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Text, nullable=False)
+    title = Column(Text, nullable=True)
+    full = Column(Text, nullable=False)
 
-    listings = relationship('Listings', backref='reference', cascade='all, delete-orphan', passive_deletes=True)
+    listings = relationship('Listing', backref='reference', cascade='all, delete-orphan', passive_deletes=True)
 
     def __repr__(self):
-        return "<Reference(id='%s', name='%s')>" % (self.id, self.name)
+        return "<Reference(id='%s', title='%s', full='%s')>" % (self.id, self.title, self.full)
 
 
 class Property(Base):
