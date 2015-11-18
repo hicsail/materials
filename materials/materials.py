@@ -1,7 +1,7 @@
 import sqlalchemy
 from config import config
 from sqlalchemy import engine_from_config
-from db.tables import Base
+from db import Base, Listing, Property, Measurement, Reference, Component, Mixture
 
 
 def init():
