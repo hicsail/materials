@@ -12,7 +12,8 @@ class Component(Base):
     __tablename__ = 'components'
 
     id = Column(Integer, primary_key=True)
-    component_name = Column(Text, nullable=False)
+    name = Column(Text, nullable=False)
+    formula = Column(Text, nullable=True)
     bond_length = Column(Float, nullable=True)
     bond_angle = Column(Float, nullable=True)
     energy = Column(Float, nullable=True)
