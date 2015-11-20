@@ -37,28 +37,26 @@ def parse_string(Session, data):
     if created:
         reference.title = data['ref']['title']
 
-    # Listing
-    # TODO fix url
-    listing = Listing(url='test', reference=reference)
-
     # Mixture
     # See if components already share a mixture, should only ever be one mixture
     shared_mixture = set(component_mixtures[0]).intersection(*component_mixtures[:1])
-    if not shared_mixture:
+    if shared_mixture:
+        mix_id = shared_mixture.pop()
+        mixture = session.query(Mixture).filter(Mixture.id == mix_id).first()
+    else:
         mixture = Mixture()
-        mixture.listings.append(listing)
+        # New mixture, add it to the existing components
         for comp in components:
             comp.mixtures.append(mixture)
-    else:
-        mixture = session.query(Mixture).filter(Mixture.id == shared_mixture[0])
-        mixture.listings.append(listing)
+
+    # Listing
+    # TODO fix url
+    listing = Listing(url='test', reference=reference, mixture=mixture)
+    mixture.listings.append(listing)
+
     # Measurements
     # Properties
-    reference, created = get_or_create(session, Reference, full=data['ref']['full'])
-    if created:
-        reference.title = data['ref']['title']
     session.commit()
-    mixture = session.query(Mixture).first()
     print(mixture.components)
 
 
