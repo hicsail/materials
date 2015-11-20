@@ -1,11 +1,12 @@
 from sqlalchemy import Table, Column, Integer, Text, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.associationproxy import association_proxy
 
 Base = declarative_base()
 mixture_components = Table('mixture_components', Base.metadata,
-                           Column('component_id', Integer, ForeignKey('components.id')),
-                           Column('mixture_id', Integer, ForeignKey('mixtures.id')))
+                           Column('mixture_id', Integer, ForeignKey('mixtures.id'), primary_key=True),
+                           Column('component_id', Integer, ForeignKey('components.id'), primary_key=True))
 
 
 class Component(Base):
@@ -19,7 +20,7 @@ class Component(Base):
     energy = Column(Float, nullable=True)
     smiles = Column(Text, nullable=True)
 
-    mixtures = relationship('Mixture', secondary=mixture_components, backref='components', cascade='all, delete',
+    mixtures = relationship('Mixture', backref="_components", secondary=mixture_components, cascade='all, delete',
                             passive_deletes=True)
 
     def __repr__(self):
@@ -31,11 +32,14 @@ class Mixture(Base):
     __tablename__ = 'mixtures'
 
     id = Column(Integer, primary_key=True)
+    # Used to get all components for a mixture without having to loop through them
+    # See http://docs.sqlalchemy.org/en/latest/orm/extensions/associationproxy.html
+    components = association_proxy('_components', 'name')
 
     listings = relationship('Listing', backref='mixture', cascade='all, delete-orphan', passive_deletes=True)
 
     def __repr__(self):
-        return "<Mixture(id='%s', compound_name='%s')>" % (self.id, self.component_id)
+        return "<Mixture(id='%s')>" % self.id
 
 
 class Listing(Base):
