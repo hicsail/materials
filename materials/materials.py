@@ -53,8 +53,7 @@ def parse_string(Session, data):
 
     # Listing
     # TODO fix url
-    # TODO don't create listing if url already exists
-    listing = Listing(url='test', reference=reference, mixture=mixture)
+    listing, listing_created = get_or_create(session, Listing, url='test', reference=reference, mixture=mixture)
     mixture.listings.append(listing)
 
     # Properties
@@ -89,30 +88,32 @@ def parse_string(Session, data):
         properties.append(prop.id)
 
     # Measurements
-    # Get the last measurement group ID and increment by 1
-    measurement_group_id = session.query(Measurement, Measurement.measurement_group_id) \
-        .order_by(Measurement.measurement_group_id.desc()).first()
-    if measurement_group_id:
-        measurement_group_id += 1
-    else:
-        measurement_group_id = 1
+    # Only proceed if we created a new listing, otherwise measurements would be duplicated
+    if listing_created:
+        # Get the last measurement group ID and increment by 1
+        measurement_group_id = session.query(Measurement, Measurement.measurement_group_id) \
+            .order_by(Measurement.measurement_group_id.desc()).first()
+        if measurement_group_id:
+            measurement_group_id += 1
+        else:
+            measurement_group_id = 1
 
-    for measurement_group in data['data']:
-        measurements = []
-        # Use i to be able to access properties[i] since this matches the order of the individual measurements
-        for i in xrange(len(measurement_group)):
-            # TODO check if temp, pressure and ref already existing and add to that??
-            try:
-                m = Measurement(error=measurement_group[i][1], value=measurement_group[i][0], listing_id=listing.id,
-                                property_id=properties[i], measurement_group_id=measurement_group_id)
-            except IndexError:
-                # No error property is present, try again without it
-                m = Measurement(value=measurement_group[i][0], listing_id=listing.id,
-                                property_id=properties[i], measurement_group_id=measurement_group_id)
-            measurements.append(m)
+        for measurement_group in data['data']:
+            measurements = []
+            # Use i to be able to access properties[i] since this matches the order of the individual measurements
+            for i in xrange(len(measurement_group)):
+                # TODO check if temp, pressure and ref already existing and add to that??
+                try:
+                    m = Measurement(error=measurement_group[i][1], value=measurement_group[i][0], listing_id=listing.id,
+                                    property_id=properties[i], measurement_group_id=measurement_group_id)
+                except IndexError:
+                    # No error property is present, try again without it
+                    m = Measurement(value=measurement_group[i][0], listing_id=listing.id,
+                                    property_id=properties[i], measurement_group_id=measurement_group_id)
+                measurements.append(m)
 
-        session.add_all(measurements)
-        measurement_group_id += 1
+            session.add_all(measurements)
+            measurement_group_id += 1
 
     session.commit()
 
