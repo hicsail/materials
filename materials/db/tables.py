@@ -72,10 +72,9 @@ class Measurement(Base):
     measurement_group_id = Column(Integer, nullable=False)
     value = Column(Float, nullable=False)
     error = Column(Integer, nullable=True)
-    unit = Column(Text, nullable=True)
 
     def __repr__(self):
-        return "<Measurement(id='%s', value='%s')>" % (self.id, self.value)
+        return "<Measurement(id='%s', value='%s', error='%s')>" % (self.id, self.value, self.error)
 
 
 class Reference(Base):
@@ -96,8 +95,9 @@ class Property(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
+    unit = Column(Text, nullable=True)
 
     measurements = relationship('Measurement', backref='property', cascade='all, delete-orphan', passive_deletes=True)
 
     def __repr__(self):
-        return "<Property(id='%s', name='%s')>" % (self.id, self.name)
+        return "<Property(id='%s', name='%s', unit='%s')>" % (self.id, self.name, self.unit)
