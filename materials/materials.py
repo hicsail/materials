@@ -1,5 +1,6 @@
 import sqlalchemy
 import json
+import re
 from config import config
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
@@ -51,13 +52,43 @@ def parse_string(Session, data):
 
     # Listing
     # TODO fix url
+    # TODO don't create listing if url already exists
     listing = Listing(url='test', reference=reference, mixture=mixture)
     mixture.listings.append(listing)
 
-    # Measurements
     # Properties
+    properties = []
+    for i in xrange(len(data['dhead'])):
+        prop_name, unit = None, None
+        term = data['dhead'][i][0]
+        # Search for word after comma space
+        # Unit is searched first since the property search returns everything before a comma, even if it isn't there
+        try:
+            unit = re.search('(?:,\s)(.*)$', term).group(1)
+            # Replace black small circle with UTF-8 middle dot for multiplication symbol
+            unit = unit.replace('&#8226;', u'\u00B7')
+        except AttributeError:
+            # No need to do anything if no unit is found
+            pass
+        if unit:
+            # Molality is of form: MolaLity of x, mol/kg. We want to drop the 'of x' part
+            if "MolaLity" in unit:
+                prop_name = "Molality"
+            else:
+                # All terms before potential comma
+                prop_name = re.search('[^,]*', term).group(0)
+        else:
+            # First two words
+            prop_name = re.search('(?:\w+\s)(?:\w+)', term).group(0)
+        # Add properties to database or get existing one
+        prop, created = get_or_create(session, Property, name=prop_name, unit=unit)
+        # Store the ID to use in measurement
+        properties.append(prop.id)
+
+    # Measurements
+
     session.commit()
-    print(mixture.components)
+    #print(mixture.components)
 
 
 # https://stackoverflow.com/questions/2546207/does-sqlalchemy-have-an-equivalent-of-djangos-get-or-create
