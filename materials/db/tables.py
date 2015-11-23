@@ -66,10 +66,11 @@ class Measurement(Base):
     """
     __tablename__ = 'measurements'
 
-    id = Column(Integer, primary_key=True)
-    listing_id = Column(Integer, ForeignKey('listings.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    property_id = Column(Integer, ForeignKey('properties.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    measurement_group_id = Column(Integer, nullable=False)
+    measurement_group_id = Column(Integer, primary_key=True, nullable=False)
+    listing_id = Column(Integer, ForeignKey('listings.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    property_id = Column(Integer, ForeignKey('properties.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
     value = Column(Float, nullable=False)
     error = Column(Float, nullable=True)
 
