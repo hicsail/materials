@@ -101,10 +101,11 @@ class Nist:
         # Only proceed if we created a new listing, otherwise measurements would be duplicated
         if listing_created:
             # Get the last measurement group ID and increment by 1
-            measurement_group_id = self.session.query(Measurement, Measurement.measurement_group_id) \
+            measurement_group_id = self.session.query(Measurement.measurement_group_id) \
                 .order_by(Measurement.measurement_group_id.desc()).first()
             if measurement_group_id:
-                measurement_group_id += 1
+                # Result is a tuple with one element
+                measurement_group_id = measurement_group_id[0] + 1
             else:
                 measurement_group_id = 1
 
