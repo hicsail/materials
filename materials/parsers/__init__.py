@@ -1,3 +1,3 @@
-from .nist import Nist
+from .nist import NistParser
 
-__all__ = ['Nist']
+__all__ = ['NistParser']

@@ -3,7 +3,7 @@ from db import Listing, Property, Measurement, Reference, Component, Mixture
 from db import get_or_create
 
 
-class Nist:
+class NistParser:
     def __init__(self, session, data, url):
         self.session = session
         self.data = data
