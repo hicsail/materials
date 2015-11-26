@@ -12,6 +12,7 @@ pyasn1-modules==0.0.8
 pycparser==2.14
 pyOpenSSL==0.15.1
 queuelib==1.4.2
+requests==2.8.1
 Scrapy==1.0.3
 service-identity==14.0.0
 six==1.10.0
