@@ -48,7 +48,7 @@ class Listing(Base):
     id = Column(Integer, primary_key=True)
     mixture_id = Column(Integer, ForeignKey('mixtures.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     reference_id = Column(Integer, ForeignKey('references.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    url = Column(Text)
+    url = Column(Text, nullable=False)
 
     measurements = relationship('Measurement', backref='listing', cascade='all, delete-orphan',
                                 passive_deletes=True)
