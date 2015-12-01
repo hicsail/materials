@@ -88,7 +88,13 @@ class NistParser:
                     prop_name = re.search('[^,]*', term).group(0)
             else:
                 # First two words
-                prop_name = re.search('(?:\w+\s)(?:\w+)', term).group(0)
+                try:
+                    prop_name = re.search('(?:\w+\s)(?:\w+)', term).group(0)
+                except AttributeError:
+                    # This only happens when the data is incomplete
+                    # For example, "Viscosity" without any unit
+                    prop_name = term
+                    pass
             # Add properties to self.database or get existing one
             prop, created = get_or_create(self.session, Property, name=prop_name, unit=unit)
             # Make sure we have the property ID if these are new properties
