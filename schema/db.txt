@@ -1,26 +1,31 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2015-11-12 18:49:46.637
+-- Last modification date: 2015-12-01 23:05:38.034
 
 
 
 
 -- tables
--- Table: listings
-CREATE TABLE listings (
+-- Table: components
+CREATE TABLE components (
     id int  NOT NULL,
-    material_id int  NOT NULL,
-    url text  NULL,
-    CONSTRAINT listings_pk PRIMARY KEY (id)
+    name text  NOT NULL,
+    formula text  NULL,
+    bond_length double precision  NULL,
+    bond_angle double precision  NULL,
+    energy double precision  NULL,
+    smiles text  NULL,
+    CONSTRAINT components_pk PRIMARY KEY (id)
 );
 
 
 
--- Table: materials
-CREATE TABLE materials (
+-- Table: listings
+CREATE TABLE listings (
     id int  NOT NULL,
-    smiles text  NOT NULL,
-    compound_name text  NOT NULL,
-    CONSTRAINT materials_pk PRIMARY KEY (id)
+    mixtures_id int  NOT NULL,
+    reference_id int  NOT NULL,
+    url text  NOT NULL,
+    CONSTRAINT listings_pk PRIMARY KEY (id)
 );
 
 
@@ -32,8 +37,24 @@ CREATE TABLE measurements (
     listing_id int  NOT NULL,
     value int  NOT NULL,
     error int  NULL,
-    unit text  NOT NULL,
     CONSTRAINT measurements_pk PRIMARY KEY (id)
+);
+
+
+
+-- Table: mixture_components
+CREATE TABLE mixture_components (
+    component_id int  NOT NULL,
+    mixture_id int  NOT NULL,
+    CONSTRAINT mixture_components_pk PRIMARY KEY (component_id,mixture_id)
+);
+
+
+
+-- Table: mixtures
+CREATE TABLE mixtures (
+    id int  NOT NULL,
+    CONSTRAINT mixtures_pk PRIMARY KEY (id)
 );
 
 
@@ -42,6 +63,7 @@ CREATE TABLE measurements (
 CREATE TABLE properties (
     id int  NOT NULL,
     name text  NOT NULL,
+    unit text  NULL,
     CONSTRAINT properties_pk PRIMARY KEY (id)
 );
 
@@ -50,8 +72,8 @@ CREATE TABLE properties (
 -- Table: "references"
 CREATE TABLE "references" (
     id int  NOT NULL,
-    listing_id int  NOT NULL,
-    name text  NOT NULL,
+    title text  NULL,
+    "full" text  NOT NULL,
     CONSTRAINT references_pk PRIMARY KEY (id)
 );
 
@@ -62,52 +84,70 @@ CREATE TABLE "references" (
 
 
 -- foreign keys
--- Reference:  listing_material (table: listings)
+-- Reference:  listings_mixtures (table: listings)
 
 
-ALTER TABLE listings ADD CONSTRAINT listing_material 
-    FOREIGN KEY (material_id)
-    REFERENCES materials (id)
-    ON DELETE  CASCADE 
-    ON UPDATE  CASCADE 
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE 
+ALTER TABLE listings ADD CONSTRAINT listings_mixtures
+    FOREIGN KEY (mixtures_id)
+    REFERENCES mixtures (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
+-- Reference:  listings_references (table: listings)
+
+
+ALTER TABLE listings ADD CONSTRAINT listings_references
+    FOREIGN KEY (reference_id)
+    REFERENCES "references" (id)
+    ON DELETE  CASCADE
+    ON UPDATE  CASCADE
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
 ;
 
 -- Reference:  measurement_listing (table: measurements)
 
 
-ALTER TABLE measurements ADD CONSTRAINT measurement_listing 
+ALTER TABLE measurements ADD CONSTRAINT measurement_listing
     FOREIGN KEY (listing_id)
     REFERENCES listings (id)
-    ON DELETE  CASCADE 
-    ON UPDATE  CASCADE 
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE 
+    ON DELETE  CASCADE
+    ON UPDATE  CASCADE
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
 ;
 
 -- Reference:  measurement_property (table: measurements)
 
 
-ALTER TABLE measurements ADD CONSTRAINT measurement_property 
+ALTER TABLE measurements ADD CONSTRAINT measurement_property
     FOREIGN KEY (property_id)
     REFERENCES properties (id)
-    ON DELETE  CASCADE 
-    ON UPDATE  CASCADE 
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE 
+    ON DELETE  CASCADE
+    ON UPDATE  CASCADE
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
 ;
 
--- Reference:  reference_listing (table: "references")
+-- Reference:  mixture_components_components (table: mixture_components)
 
 
-ALTER TABLE "references" ADD CONSTRAINT reference_listing 
-    FOREIGN KEY (listing_id)
-    REFERENCES listings (id)
-    ON DELETE  CASCADE 
-    ON UPDATE  CASCADE 
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE 
+ALTER TABLE mixture_components ADD CONSTRAINT mixture_components_components
+    FOREIGN KEY (component_id)
+    REFERENCES components (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
+-- Reference:  mixture_components_mixtures (table: mixture_components)
+
+
+ALTER TABLE mixture_components ADD CONSTRAINT mixture_components_mixtures
+    FOREIGN KEY (mixture_id)
+    REFERENCES mixtures (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
 ;
 
 
