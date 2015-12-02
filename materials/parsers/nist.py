@@ -68,33 +68,21 @@ class NistParser:
     def _parse_properties(self):
         properties = []
         for i in xrange(len(self.data['dhead'])):
-            prop_name, unit = None, None
             term = self.data['dhead'][i][0]
-            # Search for words after last occurrence of "comma space" (", ")
-            # Unit is searched first since the property search returns everything before a comma, even if it isn't there
+            # Properties have two possible forms, with and without a unit
+            # The unit is the last part after "comma space" in the string, e.g "Temperature, K"
+            # Properties like Refractive index do not have a unit
+            # This regex splits up the property into everything before and after the last "comma space" occurrence
+            parts = re.search('(.*),\s(.*)', term)
             try:
-                unit = re.search(',\s([^,]+)$', term).group(1)
+                prop_name = parts.group(1)
+                unit = parts.group(2)
                 # Replace black small circle with UTF-8 middle dot for multiplication symbol
                 unit = unit.replace('&#8226;', u'\u00B7')
             except AttributeError:
-                # No need to do anything if no unit is found
-                pass
-            if unit:
-                # Molality is of form: MolaLity of x, mol/kg. We want to drop the 'of x' part
-                if "MolaLity" in unit:
-                    prop_name = "Molality"
-                else:
-                    # All terms before potential comma
-                    prop_name = re.search('[^,]*', term).group(0)
-            else:
-                # First two words
-                try:
-                    prop_name = re.search('(?:\w+\s)(?:\w+)', term).group(0)
-                except AttributeError:
-                    # This only happens when the data is incomplete
-                    # For example, "Viscosity" without any unit
-                    prop_name = term
-                    pass
+                # If no unit is found, the property is considered to be the full string
+                prop_name = term
+                unit = None
             # Add properties to self.database or get existing one
             prop, created = get_or_create(self.session, Property, name=prop_name, unit=unit)
             # Make sure we have the property ID if these are new properties
