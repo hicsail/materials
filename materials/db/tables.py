@@ -97,6 +97,7 @@ class Property(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
     unit = Column(Text, nullable=True)
+    phase = Column(Text, nullable=True)
 
     measurements = relationship('Measurement', backref='property', cascade='all, delete-orphan', passive_deletes=True)
 

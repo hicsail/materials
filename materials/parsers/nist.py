@@ -69,6 +69,12 @@ class NistParser:
         properties = []
         for i in xrange(len(self.data['dhead'])):
             term = self.data['dhead'][i][0]
+            try:
+                # Get the phase of the component
+                phase = self.data['dhead'][i][1]
+            except IndexError:
+                # A fraction does not have a phase listed
+                phase = None
             # Properties have two possible forms, with and without a unit
             # The unit is the last part after "comma space" in the string, e.g "Temperature, K"
             # Properties like Refractive index do not have a unit
@@ -84,7 +90,7 @@ class NistParser:
                 prop_name = term
                 unit = None
             # Add properties to self.database or get existing one
-            prop, created = get_or_create(self.session, Property, name=prop_name, unit=unit)
+            prop, created = get_or_create(self.session, Property, name=prop_name, unit=unit, phase=phase)
             # Make sure we have the property ID if these are new properties
             self.session.commit()
             # Store the ID to use in measurement
