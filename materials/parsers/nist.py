@@ -70,10 +70,10 @@ class NistParser:
         for i in xrange(len(self.data['dhead'])):
             prop_name, unit = None, None
             term = self.data['dhead'][i][0]
-            # Search for word after comma space
+            # Search for words after last occurrence of "comma space" (", ")
             # Unit is searched first since the property search returns everything before a comma, even if it isn't there
             try:
-                unit = re.search('(?:,\s)(.*)$', term).group(1)
+                unit = re.search(',\s([^,]+)$', term).group(1)
                 # Replace black small circle with UTF-8 middle dot for multiplication symbol
                 unit = unit.replace('&#8226;', u'\u00B7')
             except AttributeError:
