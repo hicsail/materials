@@ -1,5 +1,5 @@
 import re
-from db import Listing, Property, Measurement, Reference, Component, Mixture
+from db import Listing, Property, Measurement, Ref, Component, Mixture
 from db import get_or_create
 
 
@@ -12,12 +12,12 @@ class NistParser:
     def parse_and_store(self):
         # Components
         components, component_mixtures = self._parse_components()
-        # Reference
-        reference = self._parse_reference()
+        # Ref
+        ref = self._parse_ref()
         # Mixture
         mixture = self._parse_mixture(components, component_mixtures)
         # Listing
-        listing, listing_created = self._parse_listing(mixture, reference)
+        listing, listing_created = self._parse_listing(mixture, ref)
         # Properties
         properties = self._parse_properties()
         # Measurements
@@ -40,11 +40,11 @@ class NistParser:
             component_mixtures.append([x.id for x in component.mixtures])
         return components, component_mixtures
 
-    def _parse_reference(self):
-        reference, created = get_or_create(self.session, Reference, full=self.data['ref']['full'])
+    def _parse_ref(self):
+        ref, created = get_or_create(self.session, Ref, full=self.data['ref']['full'])
         if created:
-            reference.title = self.data['ref']['title']
-        return reference
+            ref.title = self.data['ref']['title']
+        return ref
 
     def _parse_mixture(self, components, component_mixtures):
         # See if components already share a mixture, should only ever be one mixture
@@ -59,8 +59,8 @@ class NistParser:
                 comp.mixtures.append(mixture)
         return mixture
 
-    def _parse_listing(self, mixture, reference):
-        listing, listing_created = get_or_create(self.session, Listing, url=self.url, reference=reference,
+    def _parse_listing(self, mixture, ref):
+        listing, listing_created = get_or_create(self.session, Listing, url=self.url, ref=ref,
                                                  mixture=mixture)
         mixture.listings.append(listing)
         return listing, listing_created

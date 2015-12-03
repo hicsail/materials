@@ -47,7 +47,7 @@ class Listing(Base):
 
     id = Column(Integer, primary_key=True)
     mixture_id = Column(Integer, ForeignKey('mixtures.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    reference_id = Column(Integer, ForeignKey('references.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    ref_id = Column(Integer, ForeignKey('refs.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     url = Column(Text, nullable=False)
 
     measurements = relationship('Measurement', backref='listing', cascade='all, delete-orphan',
@@ -78,17 +78,17 @@ class Measurement(Base):
         return "<Measurement(id='%s', value='%s', error='%s')>" % (self.id, self.value, self.error)
 
 
-class Reference(Base):
-    __tablename__ = 'references'
+class Ref(Base):
+    __tablename__ = 'refs'
 
     id = Column(Integer, primary_key=True)
     title = Column(Text, nullable=True)
     full = Column(Text, nullable=False)
 
-    listings = relationship('Listing', backref='reference', cascade='all, delete-orphan', passive_deletes=True)
+    listings = relationship('Listing', backref='ref', cascade='all, delete-orphan', passive_deletes=True)
 
     def __repr__(self):
-        return "<Reference(id='%s', title='%s', full='%s')>" % (self.id, self.title, self.full)
+        return "<Ref(id='%s', title='%s', full='%s')>" % (self.id, self.title, self.full)
 
 
 class Property(Base):
