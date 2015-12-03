@@ -1,5 +1,5 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2015-12-01 23:05:38.034
+-- Last modification date: 2015-12-03 19:42:00.775
 
 
 
@@ -64,6 +64,7 @@ CREATE TABLE properties (
     id int  NOT NULL,
     name text  NOT NULL,
     unit text  NULL,
+    phase text  NOT NULL,
     CONSTRAINT properties_pk PRIMARY KEY (id)
 );
 
@@ -87,67 +88,67 @@ CREATE TABLE "references" (
 -- Reference:  listings_mixtures (table: listings)
 
 
-ALTER TABLE listings ADD CONSTRAINT listings_mixtures
+ALTER TABLE listings ADD CONSTRAINT listings_mixtures 
     FOREIGN KEY (mixtures_id)
     REFERENCES mixtures (id)
-    NOT DEFERRABLE
-    INITIALLY IMMEDIATE
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
 ;
 
 -- Reference:  listings_references (table: listings)
 
 
-ALTER TABLE listings ADD CONSTRAINT listings_references
+ALTER TABLE listings ADD CONSTRAINT listings_references 
     FOREIGN KEY (reference_id)
     REFERENCES "references" (id)
-    ON DELETE  CASCADE
-    ON UPDATE  CASCADE
-    NOT DEFERRABLE
-    INITIALLY IMMEDIATE
+    ON DELETE  CASCADE 
+    ON UPDATE  CASCADE 
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
 ;
 
 -- Reference:  measurement_listing (table: measurements)
 
 
-ALTER TABLE measurements ADD CONSTRAINT measurement_listing
+ALTER TABLE measurements ADD CONSTRAINT measurement_listing 
     FOREIGN KEY (listing_id)
     REFERENCES listings (id)
-    ON DELETE  CASCADE
-    ON UPDATE  CASCADE
-    NOT DEFERRABLE
-    INITIALLY IMMEDIATE
+    ON DELETE  CASCADE 
+    ON UPDATE  CASCADE 
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
 ;
 
 -- Reference:  measurement_property (table: measurements)
 
 
-ALTER TABLE measurements ADD CONSTRAINT measurement_property
+ALTER TABLE measurements ADD CONSTRAINT measurement_property 
     FOREIGN KEY (property_id)
     REFERENCES properties (id)
-    ON DELETE  CASCADE
-    ON UPDATE  CASCADE
-    NOT DEFERRABLE
-    INITIALLY IMMEDIATE
+    ON DELETE  CASCADE 
+    ON UPDATE  CASCADE 
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
 ;
 
 -- Reference:  mixture_components_components (table: mixture_components)
 
 
-ALTER TABLE mixture_components ADD CONSTRAINT mixture_components_components
+ALTER TABLE mixture_components ADD CONSTRAINT mixture_components_components 
     FOREIGN KEY (component_id)
     REFERENCES components (id)
-    NOT DEFERRABLE
-    INITIALLY IMMEDIATE
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
 ;
 
 -- Reference:  mixture_components_mixtures (table: mixture_components)
 
 
-ALTER TABLE mixture_components ADD CONSTRAINT mixture_components_mixtures
+ALTER TABLE mixture_components ADD CONSTRAINT mixture_components_mixtures 
     FOREIGN KEY (mixture_id)
     REFERENCES mixtures (id)
-    NOT DEFERRABLE
-    INITIALLY IMMEDIATE
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE 
 ;
 
 
