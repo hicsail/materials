@@ -118,10 +118,15 @@ class NistParser:
                         m = Measurement(error=measurement_group[i][1], value=measurement_group[i][0],
                                         listing_id=listing.id,
                                         property_id=properties[i], measurement_group_id=measurement_group_id)
-                    except IndexError:
+                    except (IndexError, TypeError):
                         # No error property is present, try again without it
-                        m = Measurement(value=measurement_group[i][0], listing_id=listing.id,
+                        try:
+                            m = Measurement(value=measurement_group[i][0], listing_id=listing.id,
                                         property_id=properties[i], measurement_group_id=measurement_group_id)
+                        except (IndexError, TypeError):
+                            # Some measurements are incomplete, ignore the full measurement group
+                            measurements = []
+                            break
                     measurements.append(m)
 
                 self.session.add_all(measurements)
