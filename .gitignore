@@ -75,3 +75,7 @@ pip-selfcheck.json
 
 ## Directory-based project format:
 .idea/
+
+# Resource folder contents
+resources/*
+!resources/.gitkeep
