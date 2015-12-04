@@ -25,7 +25,7 @@ def main():
             get_listings()
         elif o == '--parse-listings':
             # Init db connection
-            print sqlalchemy.__version__
+            print('SQLAlchemy version' + sqlalchemy.__version__)
             engine = engine_from_config(config, prefix='sqlalchemy.')
             Base.metadata.create_all(engine)
             Session = sessionmaker(bind=engine)
@@ -76,9 +76,12 @@ def parse_listings(session):
 
 
 def usage():
-    print('$ python materials/materials.py --get-urls --get-listings --parse-listings')
-    print('Call from main folder')
-    print('Be sure to follow the order of options')
+    print('Usage: $ python materials/materials.py --get-urls --get-listings --parse-listings')
+    print('--get-urls writes list of all URLs to the resources folder')
+    print('--get-listings uses the list of URLs and stores output in the resources folder')
+    print('--parse-listings takes the listing data and stores it in the db')
+    print('The order of these 3 commands matters.')
+    print('Set any options for SQLAlchemy in config.py')
 
 if __name__ == '__main__':
     main()
