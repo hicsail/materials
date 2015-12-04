@@ -11,6 +11,7 @@ from spiders import NistSpider
 
 def main():
     try:
+        # Get CLI options
         opts, args = getopt.getopt(sys.argv[1:], "", ['get-urls', 'get-listings', 'parse-listings'])
     except getopt.GetoptError as e:
         print str(e)
@@ -37,6 +38,9 @@ def main():
 
 
 def get_urls():
+    """
+    Runs sequence of searches on NIST website which return all mixtures. Writes list of URLs to resources/urls.txt.
+    """
     urls = [
         'http://ilthermo.boulder.nist.gov/ILT2/ilsearch?cmp=&ncmp=1&year=&auth=&keyw=&prp=0',
         'http://ilthermo.boulder.nist.gov/ILT2/ilsearch?cmp=&ncmp=2&year=&auth=&keyw=&prp=0',
@@ -49,6 +53,9 @@ def get_urls():
 
 
 def get_listings():
+    """
+    Executes request for each individual URL and stores result in resources/data.txt.
+    """
     try:
         with open('resources/urls.txt') as f:
             urls = json.loads(f.read())
@@ -62,6 +69,10 @@ def get_listings():
 
 
 def parse_listings(session):
+    """
+    Parses listing data and stores entries in database.
+    :param session: Database session
+    """
     try:
         with open('resources/data.txt') as f:
             data = json.loads(f.read())

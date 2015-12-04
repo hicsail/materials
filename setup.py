@@ -28,7 +28,7 @@ class PyTest(TestCommand):
 setup(
     name='materials',
     version=materials.__version__,
-    description="Scraper for chemical compounds",
+    description="Scraper for NIST Ionic Liquids Database",
     long_description=readme,
     author="Boston University",
     author_email='fjansen@bu.edu',
@@ -43,11 +43,11 @@ setup(
     cmdclass={'test': PyTest},
     license="MIT",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: MIT',
         'Natural Language :: English',
-        "Programming Language :: Python :: 3"
+        "Programming Language :: Python :: 2"
     ],
     test_suite='tests',
     tests_require=['pytest'],
