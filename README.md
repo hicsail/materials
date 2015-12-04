@@ -1,5 +1,5 @@
 # Materials
-A scraper for the NIST Ionic Liquids Database.
+A scraper for the [NIST Ionic Liquids Database](http://ilthermo.boulder.nist.gov/).
 
 ## Usage
 Tested with Python 2.7.10 and PostgreSQL 9.4.5.
