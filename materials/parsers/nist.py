@@ -28,6 +28,7 @@ class NistParser:
     def _parse_components(self):
         components = []
         component_mixtures = []
+        num_components = len(self.data['components'])
         for i in xrange(len(self.data['components'])):
             component, created = get_or_create(self.session, Component, name=self.data['components'][i]['name'])
             if created:
@@ -37,7 +38,7 @@ class NistParser:
             # Store components in case we have to add a mixture later on
             components.append(component)
             # Build list of mixture IDs for each component
-            component_mixtures.append([x.id for x in component.mixtures])
+            component_mixtures.append([x.id for x in component.mixtures if len(x.components) is num_components])
         return components, component_mixtures
 
     def _parse_ref(self):
@@ -48,7 +49,7 @@ class NistParser:
 
     def _parse_mixture(self, components, component_mixtures):
         # See if components already share a mixture, should only ever be one mixture
-        shared_mixture = set(component_mixtures[0]).intersection(*component_mixtures[:1])
+        shared_mixture = set(component_mixtures[0]).intersection(*component_mixtures)
         if shared_mixture:
             mix_id = shared_mixture.pop()
             mixture = self.session.query(Mixture).filter(Mixture.id == mix_id).first()
