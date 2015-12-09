@@ -26,7 +26,7 @@ def main():
             get_listings()
         elif o == '--parse-listings':
             # Init db connection
-            print('SQLAlchemy version' + sqlalchemy.__version__)
+            print('SQLAlchemy version ' + sqlalchemy.__version__)
             engine = engine_from_config(config, prefix='sqlalchemy.')
             Base.metadata.create_all(engine)
             Session = sessionmaker(bind=engine)

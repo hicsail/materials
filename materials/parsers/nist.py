@@ -1,6 +1,7 @@
 import re
 from db import Listing, Property, Measurement, Ref, Component, Mixture
 from db import get_or_create
+from sqlalchemy.sql import text
 
 
 class NistParser:
@@ -11,11 +12,11 @@ class NistParser:
 
     def parse_and_store(self):
         # Components
-        components, component_mixtures = self._parse_components()
+        components, shared_mixture = self._parse_components()
         # Ref
         ref = self._parse_ref()
         # Mixture
-        mixture = self._parse_mixture(components, component_mixtures)
+        mixture = self._parse_mixture(components, shared_mixture)
         # Listing
         listing, listing_created = self._parse_listing(mixture, ref)
         # Properties
@@ -27,8 +28,7 @@ class NistParser:
 
     def _parse_components(self):
         components = []
-        component_mixtures = []
-        num_components = len(self.data['components'])
+        component_ids = []
         for i in xrange(len(self.data['components'])):
             component, created = get_or_create(self.session, Component, name=self.data['components'][i]['name'])
             if created:
@@ -37,9 +37,23 @@ class NistParser:
                 self.session.commit()
             # Store components in case we have to add a mixture later on
             components.append(component)
-            # Build list of mixture IDs for each component
-            component_mixtures.append([x.id for x in component.mixtures if len(x.components) is num_components])
-        return components, component_mixtures
+            component_ids.append(component.id)
+        # See if components already share a mixture, should only ever be one mixture
+        # Optimized query, SQLAlchemy was too slow. Query first gets list of mixtures that contains either component.
+        # Then only the ones where mixture_id appears as much as there are components are kept. Finally an intersect is
+        # done with the actual mixtures that have x components. This is necessary because a mixture with 3 components
+        # can provide a false positive when only looking at 2 components, which won't be stripped out in the first query
+        # IN ... takes CSV: (1, 2, 3) Converts components IDs to strings, then adds commas
+        query = 'SELECT mixture_id FROM mixture_components ' \
+                'WHERE component_id IN ('+", ".join(map(str, component_ids))+') ' \
+                'GROUP BY mixture_id HAVING count(mixture_id) = :length ' \
+                'INTERSECT ' \
+                'SELECT mixture_id FROM mixture_components ' \
+                'GROUP BY mixture_id HAVING count(mixture_id) = :length'
+        shared_mixture = self.session.execute(text(query),
+                                              params={'length': len(components)}).first()
+
+        return components, shared_mixture
 
     def _parse_ref(self):
         ref, created = get_or_create(self.session, Ref, full=self.data['ref']['full'])
@@ -47,11 +61,10 @@ class NistParser:
             ref.title = self.data['ref']['title']
         return ref
 
-    def _parse_mixture(self, components, component_mixtures):
-        # See if components already share a mixture, should only ever be one mixture
-        shared_mixture = set(component_mixtures[0]).intersection(*component_mixtures)
+    def _parse_mixture(self, components, shared_mixture):
         if shared_mixture:
-            mix_id = shared_mixture.pop()
+            # There should only ever be one mixture, as the first element
+            mix_id = shared_mixture[0]
             mixture = self.session.query(Mixture).filter(Mixture.id == mix_id).first()
         else:
             mixture = Mixture()
@@ -123,7 +136,7 @@ class NistParser:
                         # No error property is present, try again without it
                         try:
                             m = Measurement(value=measurement_group[i][0], listing_id=listing.id,
-                                        property_id=properties[i], measurement_group_id=measurement_group_id)
+                                            property_id=properties[i], measurement_group_id=measurement_group_id)
                         except (IndexError, TypeError):
                             # Some measurements are incomplete, ignore the full measurement group
                             measurements = []
